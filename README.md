@@ -5,7 +5,8 @@
 - 手動輸入`allow pasting`
 - 輸入以下代碼:
 
-```eval(await(await fetch('https://raw.githubusercontent.com/brndan918/caleb_web_hack/refs/heads/main/all_func.txt')).text())```
+```eval(await(await fetch('https://raw.githubusercontent.com/brndan918/caleb_web_hack/refs/heads/main/all_func.txt')).text())
+```
 
 - 使用help()查看完整教學
 - 透過 `方法()` 的方式進行破解

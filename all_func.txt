@@ -95,7 +95,7 @@
     const ok = await ensureAdmin();
     if (ok) {
       const me = await getMe();
-      console.log('目前使用者:', me.email, 'is_admin:', me.is_admin);
+      console.log('目前使用者:', me.email, '| 管理員:', me.is_admin);
     }
     return ok;
   };

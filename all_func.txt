@@ -1,5 +1,3 @@
-// 已更新
-
 // ============================================================
 //  Base44 功能庫（純 fetch 版）
 //  使用方式：貼上至 Console 後，即可呼叫 window 下的函數
@@ -73,21 +71,21 @@
     try {
       const me = await getMe();
       if (me.is_admin) {
-        alert('✅ 已是管理員');
+        console.log('✅ 已經擁有管理員');
         return true;
       }
       // 提升為管理員
       const updated = { ...me, is_admin: true };
       const res = await updateMe(updated);
       if (res.ok && res.data.is_admin) {
-        alert('✅ 已成功提升為管理員！');
+        console.log('✅ 已成功提升為管理員！');
         return true;
       } else {
-        alert('❌ 提升管理員失敗，請手動檢查權限');
+        console.error('❌ 提升管理員失敗，請手動檢查權限');
         return false;
       }
     } catch (e) {
-      alert('❌ 檢查權限時發生錯誤：' + e.message);
+      console.error('❌ 檢查權限時發生錯誤：' + e.message);
       return false;
     }
   }
@@ -455,6 +453,7 @@
 }
 
   // 自動執行初始化（可手動呼叫 init）
-  console.log('Base44 功能庫已載入，請先執行 init(); 確保權限。');
+  init()
+  console.log('Base44 功能庫已載入。');
   console.log('輸入 help() 查看所有函數說明。');
 })();

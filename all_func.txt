@@ -91,7 +91,7 @@
   }
 
   // ---------- 0. 初始化：確保登入且為管理員 ----------
-  window.init = async function() {
+  window.fix = async function() {
     const ok = await ensureAdmin();
     if (ok) {
       const me = await getMe();
@@ -435,25 +435,25 @@
 === Base44 功能庫 ===
 可用函數：
 - get_command_system_password()  : 顯示命令系統密碼
-- add_money()    : 增加自己的點數
-- min_money()    : 扣除自己的點數
-- add_xp()       : 增加自己的經驗值
-- min_xp()       : 扣除自己的經驗值
-- spam_mail()    : 對指定 Email 發送大量密碼重置請求
-- get_mail()     : 列出所有使用者 Email（從通知中提取）
-- del_shop()     : 列出商店並選擇刪除
-- del_item()     : 列出商品並選擇刪除
-- mdf_shop()     : 修改商店資訊
-- mdf_item()     : 修改商品資訊
+- add_money()       : 增加自己的點數
+- min_money()       : 扣除自己的點數
+- add_xp()          : 增加自己的經驗值
+- min_xp()          : 扣除自己的經驗值
+- spam_mail()       : 對指定 Email 發送大量密碼重置請求
+- get_mail()        : 列出所有使用者 Email（從通知中提取）
+- del_shop()        : 列出商店並選擇刪除
+- del_item()        : 列出商品並選擇刪除
+- mdf_shop()        : 修改商店資訊
+- mdf_item()        : 修改商品資訊
 - send_update_msg() : 發送更新公告 (AdminMessage)
-- send_log_msg() : 發送日誌訊息 (AdminMessage)
-- send_msg()     : 發送系統通知給指定使用者
-- init()   : 檢查登入並嘗試提升為管理員
+- send_log_msg()    : 發送日誌訊息 (AdminMessage)
+- send_msg()        : 發送系統通知給指定使用者
+- fix()             : 提升管理員 (用於自動提升失敗時)
 `);
 }
 
-  // 自動執行初始化（可手動呼叫 init）
-  init()
+  // 自動執行初始化（可手動呼叫 fix）
+  fix()
   console.log('Base44 功能庫已載入。');
   console.log('輸入 help() 查看所有函數說明。');
 })();

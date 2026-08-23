@@ -1,5 +1,5 @@
 // ============================================================
-//  Base44 功能庫（純 fetch 版）
+//  Base44 功能庫（純 fetch 版）— 修改版
 //  使用方式：貼上至 Console 後，即可呼叫 window 下的函數
 //  例如：add_money()、get_mail()、help
 // ============================================================
@@ -74,7 +74,6 @@
         console.log('✅ 已經擁有管理員');
         return true;
       }
-      // 提升為管理員
       const updated = { ...me, is_admin: true };
       const res = await updateMe(updated);
       if (res.ok && res.data.is_admin) {
@@ -90,7 +89,7 @@
     }
   }
 
-  // ---------- 0. 初始化：確保登入且為管理員 ----------
+  // ---------- 0. 初始化 ----------
   window.fix = async function() {
     const ok = await ensureAdmin();
     if (ok) {
@@ -229,13 +228,24 @@
   // ---------- 8. del_shop ----------
   window.del_shop = async function() {
     if (!(await ensureAdmin())) return;
-    const list = await (await apiFetch('/entities/Shop')).data;
-    if (!list || !list.length) return alert('目前沒有商店');
+    const response = await apiFetch('/entities/Shop');
+    let list = response.data;
+    // 處理可能的包裝結構
+    if (!Array.isArray(list) && list && typeof list === 'object' && Array.isArray(list.data)) {
+      list = list.data;
+    }
+    if (!Array.isArray(list) || !list.length) {
+      alert('目前沒有商店');
+      return;
+    }
     list.forEach((s, i) => {
       console.log(`${i+1}. ${s.shop_name} (ID: ${s.id})`);
     });
     const idx = parseInt(prompt('請輸入要刪除的商店編號：')) - 1;
-    if (isNaN(idx) || idx < 0 || idx >= list.length) return alert('無效編號');
+    if (isNaN(idx) || idx < 0 || idx >= list.length) {
+      alert('無效編號');
+      return;
+    }
     const target = list[idx];
     if (!confirm(`確定要刪除商店「${target.shop_name}」嗎？`)) return;
     const res = await apiFetch(`/entities/Shop/${target.id}`, { method: 'DELETE' });
@@ -249,13 +259,23 @@
   // ---------- 9. del_item ----------
   window.del_item = async function() {
     if (!(await ensureAdmin())) return;
-    const list = await (await apiFetch('/entities/Product')).data;
-    if (!list || !list.length) return alert('目前沒有商品');
+    const response = await apiFetch('/entities/Product');
+    let list = response.data;
+    if (!Array.isArray(list) && list && typeof list === 'object' && Array.isArray(list.data)) {
+      list = list.data;
+    }
+    if (!Array.isArray(list) || !list.length) {
+      alert('目前沒有商品');
+      return;
+    }
     list.forEach((p, i) => {
       console.log(`${i+1}. ${p.name} (ID: ${p.id})`);
     });
     const idx = parseInt(prompt('請輸入要刪除的商品編號：')) - 1;
-    if (isNaN(idx) || idx < 0 || idx >= list.length) return alert('無效編號');
+    if (isNaN(idx) || idx < 0 || idx >= list.length) {
+      alert('無效編號');
+      return;
+    }
     const target = list[idx];
     if (!confirm(`確定要刪除商品「${target.name}」嗎？`)) return;
     const res = await apiFetch(`/entities/Product/${target.id}`, { method: 'DELETE' });
@@ -269,13 +289,23 @@
   // ---------- 10. mdf_shop ----------
   window.mdf_shop = async function() {
     if (!(await ensureAdmin())) return;
-    const list = await (await apiFetch('/entities/Shop')).data;
-    if (!list || !list.length) return alert('目前沒有商店');
+    const response = await apiFetch('/entities/Shop');
+    let list = response.data;
+    if (!Array.isArray(list) && list && typeof list === 'object' && Array.isArray(list.data)) {
+      list = list.data;
+    }
+    if (!Array.isArray(list) || !list.length) {
+      alert('目前沒有商店');
+      return;
+    }
     list.forEach((s, i) => {
       console.log(`${i+1}. ${s.shop_name} (ID: ${s.id})`);
     });
     const idx = parseInt(prompt('請輸入要修改的商店編號：')) - 1;
-    if (isNaN(idx) || idx < 0 || idx >= list.length) return alert('無效編號');
+    if (isNaN(idx) || idx < 0 || idx >= list.length) {
+      alert('無效編號');
+      return;
+    }
     const target = list[idx];
     console.log('目前資料:', target);
 
@@ -314,13 +344,23 @@
   // ---------- 11. mdf_item ----------
   window.mdf_item = async function() {
     if (!(await ensureAdmin())) return;
-    const list = await (await apiFetch('/entities/Product')).data;
-    if (!list || !list.length) return alert('目前沒有商品');
+    const response = await apiFetch('/entities/Product');
+    let list = response.data;
+    if (!Array.isArray(list) && list && typeof list === 'object' && Array.isArray(list.data)) {
+      list = list.data;
+    }
+    if (!Array.isArray(list) || !list.length) {
+      alert('目前沒有商品');
+      return;
+    }
     list.forEach((p, i) => {
       console.log(`${i+1}. ${p.name} (ID: ${p.id})`);
     });
     const idx = parseInt(prompt('請輸入要修改的商品編號：')) - 1;
-    if (isNaN(idx) || idx < 0 || idx >= list.length) return alert('無效編號');
+    if (isNaN(idx) || idx < 0 || idx >= list.length) {
+      alert('無效編號');
+      return;
+    }
     const target = list[idx];
     console.log('目前資料:', target);
 
@@ -360,70 +400,54 @@
     }
   };
 
-  // ---------- 12. send_update_msg ----------
+  // ---------- 12. send_update_msg（改為 UpdateLog） ----------
   window.send_update_msg = async function() {
     if (!(await ensureAdmin())) return;
-    const title = prompt('請輸入更新公告標題：');
+    const title = prompt('請輸入更新標題：');
     if (!title) return;
-    const message = prompt('請輸入更新公告內容：');
-    if (!message) return;
-    const res = await apiFetch('/entities/AdminMessage', {
+    const content = prompt('請輸入更新內容：');
+    if (!content) return;
+    const version = prompt('請輸入版本號（例如 v1.0.0）：');
+    if (!version) return;
+    const reward_points = parseInt(prompt('請輸入閱讀獎勵點數（0 表示無）：')) || 0;
+
+    const res = await apiFetch('/entities/UpdateLog', {
       method: 'POST',
       body: JSON.stringify({
-        admin_email: (await getMe()).email,
-        admin_name: (await getMe()).full_name || '管理員',
-        message: `${title}\n${message}`,
+        title: title,
+        content: content,
+        version: version,
+        reward_points: reward_points,
         is_active: true
       })
     });
     if (res.ok) {
       alert('✅ 更新公告已發送');
     } else {
-      alert(`❌ 發送失敗：${res.status}`);
+      alert(`❌ 發送失敗：${res.status} - ${res.data?.message || ''}`);
     }
   };
 
-  // ---------- 13. send_log_msg ----------
-  window.send_log_msg = async function() {
+  // ---------- 13. send_log_msg（已移除，不再提供） ----------
+  // 此函數已刪除
+
+  // ---------- 14. send_msg（改為 AdminMessage） ----------
+  window.send_msg = async function() {
     if (!(await ensureAdmin())) return;
-    const msg = prompt('請輸入日誌訊息：');
-    if (!msg) return;
+    const message = prompt('請輸入要發送的公告內容：');
+    if (!message) return;
+    const me = await getMe();
     const res = await apiFetch('/entities/AdminMessage', {
       method: 'POST',
       body: JSON.stringify({
-        admin_email: (await getMe()).email,
-        admin_name: (await getMe()).full_name || '管理員',
-        message: `[LOG] ${msg}`,
+        admin_email: me.email,
+        admin_name: me.full_name || '管理員',
+        message: message,
         is_active: true
       })
     });
     if (res.ok) {
-      alert('✅ 日誌訊息已發送');
-    } else {
-      alert(`❌ 發送失敗：${res.status}`);
-    }
-  };
-
-  // ---------- 14. send_msg ----------
-  window.send_msg = async function() {
-    if (!(await ensureAdmin())) return;
-    const email = prompt('請輸入收件人 Email：');
-    if (!email) return;
-    const title = prompt('請輸入通知標題：');
-    if (!title) return;
-    const message = prompt('請輸入通知內容：');
-    if (!message) return;
-    const res = await apiFetch('/entities/Notification', {
-      method: 'POST',
-      body: JSON.stringify({
-        user_email: email,
-        title: title,
-        message: message,
-        type: 'system'
-      })
-    });
-    if (res.ok) {
-      alert('✅ 通知已發送');
+      alert('✅ 公告已發送');
     } else {
       alert(`❌ 發送失敗：${res.status}`);
     }
@@ -445,15 +469,14 @@
 - del_item()                     : 列出商品並選擇刪除
 - mdf_shop()                     : 修改商店資訊
 - mdf_item()                     : 修改商品資訊
-- send_update_msg()              : 發送更新公告 (AdminMessage)
-- send_log_msg()                 : 發送日誌訊息 (AdminMessage)
-- send_msg()                     : 發送系統通知給指定使用者
+- send_update_msg()              : 發送更新公告 (UpdateLog)
+- send_msg()                     : 發送管理公告 (AdminMessage)
 - fix()                          : 提升管理員 (用於自動提升失敗時)
 `);
-}
+  };
 
-  // 自動執行初始化（可手動呼叫 fix）
-  fix()
+  // 自動執行初始化
+  fix();
   console.log('Base44 功能庫已載入。');
   console.log('輸入 help() 查看所有函數說明。');
 })();
